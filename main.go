@@ -65,7 +65,7 @@ func usage() {
    	fmt.Println()
    	fmt.Println("Usage:")
    	fmt.Println()
-   	fmt.Printf("\t"+AppShortName+" command [arguments]\n")
+   	fmt.Printf("\t%s command [arguments]\n", AppShortName)
    	fmt.Println()
    	fmt.Println("Available commands:")
    	fmt.Println()
@@ -73,13 +73,13 @@ func usage() {
    		cmd.Usage("\t")
    	}
    	fmt.Println()
-   	fmt.Printf("Use \""+AppShortName+" help [command]\" for more information about a command.\n")
+   	fmt.Printf("Use \"%s help [command]\" for more information about a command.\n", AppShortName)
    	fmt.Println()
    	fmt.Println("Additional help topics:")
    	fmt.Println()
    	fmt.Printf("\tactivityString\tHelp on creating strings describing new activity.\n")
    	fmt.Println()
-   	fmt.Printf("Use \""+AppShortName+" help [topic]\" for more information about a topic.\n")
+   	fmt.Printf("Use \"%s help [topic]\" for more information about a topic.\n", AppShortName)
    	fmt.Println()
    	os.Exit(1)
 }
@@ -93,7 +93,7 @@ func help(args []string) {
 	}
 	
 	if len(args) != 1 {
-		fmt.Printf("\nUsage:\n\n\t"+AppShortName+" help [command]\n\nToo many arguments given!\n")
+		fmt.Printf("\nUsage:\n\n\t%s help [command]\n\nToo many arguments given!\n", AppShortName)
 		os.Exit(1)
 	}
 	
