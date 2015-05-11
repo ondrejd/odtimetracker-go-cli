@@ -16,4 +16,4 @@ If you have correctly installed **Go** language this will download sources and b
 
 Just execute the binary with `help` argument:
 
-	odtimetracker.exe help
+	odtimetracker-go-cli help
