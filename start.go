@@ -4,20 +4,28 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"log"
+	"os"
 )
 
 var cmdStart = &Command{
-	Name:	"start",
-	Desc:	"Start new activity.",
-	Run:	runStart,
-	Help:	helpStart,
+	Name:      "start",
+	Desc:      "Start new activity.",
+	UsageDesc: "[activityString]",
+	Run:       runStart,
+	Help:      helpStart,
 }
 
-func runStart(cmd *Command, args []string) {
-	//if len(args) != 0 {
-	//	cmd.Usage()
-	//}
+func runStart(cmd *Command, db *sql.DB, args []string) {
+	if len(args) != 1 {
+		cmd.Usage("\nUsage:\n\n\t")
+		os.Exit(1)
+	}
+
+	activityString := args[0]
+	log.Println("Start activity with string: %s\n", activityString)
 
 	fmt.Println("TODO Implement `start` command!")
 	fmt.Println()

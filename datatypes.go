@@ -42,6 +42,21 @@ func (a *Activity) StoppedTime() (time.Time, error) {
 	return time.Parse(a.Stopped, time.RFC3339)
 }
 
+// Returns duration of the activity.
+func (a *Activity) Duration() time.Duration {
+	stopped, err := a.StoppedTime()
+	if err != nil {
+		stopped = time.Now()
+	}
+	
+	started, err := a.StartedTime()
+	if err != nil {
+		started = time.Now()
+	}
+	
+	return stopped.Sub(started)
+}
+
 // Initialize activity from the given string.
 func (a *Activity) Parse(activityString string) error {
 	if activityString == "" {

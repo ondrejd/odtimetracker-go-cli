@@ -4,23 +4,44 @@
 package main
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
+	"log"
+	"os"
 )
 
 var cmdList = &Command{
-	Name:	"list",
-	Desc:	"List activities or projects.",
-	Run:	runList,
-	Help:	helpList,
+	Name:      "list",
+	Desc:      "List activities or projects.",
+	UsageDesc: "[what]",
+	Run:       runList,
+	Help:      helpList,
 }
 
-func runList(cmd *Command, args []string) {
-	//if len(args) != 0 {
-	//	cmd.Usage()
-	//}
+func runList(cmd *Command, db *sql.DB, args []string) {
+	if len(args) != 1 {
+		cmd.Usage("\nUsage:\n\n\t")
+		os.Exit(1)
+	}
+	log.Println(args)
+
+	what := args[0]
+	if what != "activities" && what != "projects" {
+		err := errors.New(fmt.Sprintf("Wrong argument given - '%s' is not recognized keyword for 'list' command!", what))
+		fmt.Println(err)
+		cmd.Usage("\nUsage:\n\n\t")
+		os.Exit(1)
+	}
+	log.Println("List what: %s\n", what)
+
+	activities, err := SqliteStorage.SelectActivities(db)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	fmt.Println("TODO Implement `list` command!")
-	fmt.Println()
+	fmt.Println(activities)
 }
 
 func helpList(cmd *Command) {

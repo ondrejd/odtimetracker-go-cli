@@ -4,20 +4,24 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"os"
 )
 
 var cmdStop = &Command{
-	Name:	"stop",
-	Desc:	"Stop currently running activity.",
-	Run:	runStop,
-	Help:	helpStop,
+	Name:      "stop",
+	Desc:      "Stop currently running activity.",
+	UsageDesc: "",
+	Run:       runStop,
+	Help:      helpStop,
 }
 
-func runStop(cmd *Command, args []string) {
-	//if len(args) != 0 {
-	//	cmd.Usage()
-	//}
+func runStop(cmd *Command, db *sql.DB, args []string) {
+	if len(args) != 0 {
+		cmd.Usage("\nUsage:\n\n\t")
+		os.Exit(1)
+	}
 
 	fmt.Println("TODO Implement `stop` command!")
 	fmt.Println()

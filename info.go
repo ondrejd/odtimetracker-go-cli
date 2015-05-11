@@ -4,23 +4,33 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"log"
+	"os"
 )
 
 var cmdInfo = &Command{
-	Name:	"info",
-	Desc:	"Print info about current status.",
-	Run:	runInfo,
-	Help:	helpInfo,
+	Name:      "info",
+	Desc:      "Print info about current status.",
+	UsageDesc: "",
+	Run:       runInfo,
+	Help:      helpInfo,
 }
 
-func runInfo(cmd *Command, args []string) {
-	//if len(args) != 0 {
-	//	cmd.Usage()
-	//}
+func runInfo(cmd *Command, db *sql.DB, args []string) {
+	if len(args) != 0 {
+		cmd.Usage("\nUsage:\n\n\t")
+		os.Exit(1)
+	}
+
+	a, err := SqliteStorage.SelectActivityRunning(db)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	fmt.Println("TODO Implement `info` command!")
-	fmt.Println()
+	fmt.Println(a)
 }
 
 func helpInfo(cmd *Command) {
