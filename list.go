@@ -27,21 +27,26 @@ func runList(cmd *Command, db *sql.DB, args []string) {
 	log.Println(args)
 
 	what := args[0]
-	if what != "activities" && what != "projects" {
+	if what == "activities" {
+		activities, err := SqliteStorage.SelectActivities(db)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(activities)
+	} else if what == "projects" {
+		projects, err := SqliteStorage.SelectProjects(db)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(projects)
+	} else {
 		err := errors.New(fmt.Sprintf("Wrong argument given - '%s' is not recognized keyword for 'list' command!", what))
 		fmt.Println(err)
 		cmd.Usage("\nUsage:\n\n\t")
 		os.Exit(1)
 	}
-	log.Println("List what: %s\n", what)
-
-	activities, err := SqliteStorage.SelectActivities(db)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("TODO Implement `list` command!")
-	fmt.Println(activities)
 }
 
 func helpList(cmd *Command) {

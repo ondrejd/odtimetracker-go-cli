@@ -108,10 +108,21 @@ func sqliteStorage_RemoveProject(Id ...int64) (int, error) {
 }
 
 // Return activities.
-func sqliteStorage_SelectActivities(db *sql.DB) ([]Activity, error) {
-	var a []Activity
-	// ...
-	return a, nil
+func sqliteStorage_SelectActivities(db *sql.DB) (activities []Activity, err error) {
+	rows, err := db.Query(`SELECT * FROM Activities ORDER BY Started DESC LIMIT 5`)
+	if err != nil {
+		return activities, err
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var a Activity
+		rows.Scan(&a.ActivityId, &a.ProjectId, &a.Name, &a.Description, &a.Tags, &a.Started, &a.Stopped)
+		activities = append(activities, a)
+	}
+	rows.Close()
+
+	return activities, nil
 }
 
 // Return activity(-ies) by given ID(s).
@@ -134,10 +145,21 @@ func sqliteStorage_SelectActivityRunning(db *sql.DB) (Activity, error) {
 }
 
 // Return projects.
-func sqliteStorage_SelectProjects(db *sql.DB) ([]Project, error) {
-	var p []Project
-	// ...
-	return p, nil
+func sqliteStorage_SelectProjects(db *sql.DB) (projects []Project, err error) {
+	rows, err := db.Query(`SELECT * FROM Projects ORDER BY Name ASC LIMIT 5`)
+	if err != nil {
+		return projects, err
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var p Project
+		rows.Scan(&p.ProjectId, &p.Name, &p.Description, &p.Created)
+		projects = append(projects, p)
+	}
+	rows.Close()
+
+	return projects, nil
 }
 
 // Return project(s) by given ID(s).
