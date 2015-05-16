@@ -33,7 +33,7 @@ func runInfo(cmd *Command, db *sql.DB, args []string) {
 		log.Fatal(err)
 	} else {
 		fmt.Printf("\nThere is running activity '%s'.\nTime spent up to now: %s\n\n",
-			a.Name, a.Duration)
+			a.Name, a.Duration())
 	}
 }
 

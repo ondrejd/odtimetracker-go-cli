@@ -9,6 +9,9 @@ import (
 	"log"
 	"os/user"
 	"path"
+	"strconv"
+	"strings"
+	"time"
 )
 
 const (
@@ -49,12 +52,14 @@ var SqliteStorage = &Storage{
 	SelectProjects:        sqliteStorage_SelectProjects,
 	SelectProjectById:     sqliteStorage_SelectProjectById,
 	SelectProjectByName:   sqliteStorage_SelectProjectByName,
+	UpdateActivity:        sqliteStorage_UpdateActivity,
+	UpdateProject:         sqliteStorage_UpdateProject,
 }
 
 // Initialize storage.
 func sqliteStorage_Init() (db *sql.DB, err error) {
 	dbPath, err := databasePath()
-	log.Println(dbPath)
+	//log.Println(dbPath)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +72,7 @@ func sqliteStorage_Init() (db *sql.DB, err error) {
 
 	// Check if we are need to create schema
 	ver, err := schemaVersion(db)
-	log.Printf("Current database schema version: %d\n", ver)
+	//log.Printf("Current database schema version: %d\n", ver)
 	if err != nil {
 		return db, err
 	}
@@ -82,27 +87,77 @@ func sqliteStorage_Init() (db *sql.DB, err error) {
 }
 
 // Insert new activity.
-func sqliteStorage_InsertActivity(Name string, Project string, Tags string, Description string) (Activity, error) {
-	var a Activity
-	// ...
+func sqliteStorage_InsertActivity(db *sql.DB, pid int64, name string, desc string, tags string) (a Activity, err error) {
+	sqlStmt := `
+	INSERT INTO Activities 
+	(ProjectId, Name, Description, Tags, Started) 
+	VALUES (?, ?, ?, ?, ?)
+	`
+	stmt, err := db.Prepare(sqlStmt)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	started := time.Now().Format(time.RFC3339)
+	res, err := stmt.Exec(pid, name, desc, tags, started)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	aid, err := res.LastInsertId()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	a.ActivityId = aid
+	a.ProjectId = pid
+	a.Name = name
+	a.Description = desc
+	a.Tags = tags
+	a.Started = started
+
 	return a, nil
 }
 
 // Insert new project.
-func sqliteStorage_InsertProject(Name string, Description string) (Project, error) {
-	var p Project
-	// ...
+func sqliteStorage_InsertProject(db *sql.DB, name string, desc string) (p Project, err error) {
+	sqlStmt := `
+	INSERT INTO Projects 
+	(Name, Description, Created) 
+	VALUES (?, ?, ?)
+	`
+	stmt, err := db.Prepare(sqlStmt)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	created := time.Now().Format(time.RFC3339)
+	res, err := stmt.Exec(name, desc, created)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pid, err := res.LastInsertId()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	p.ProjectId = pid
+	p.Name = name
+	p.Description = desc
+	p.Created = created
+
 	return p, nil
 }
 
 // Remove activity(-ies) with given Id(s) form the database.
-func sqliteStorage_RemoveActivity(Id ...int64) (int, error) {
+func sqliteStorage_RemoveActivity(db *sql.DB, Id ...int64) (int, error) {
 	// ...
 	return 0, nil
 }
 
 // Remove project(s) with given Id(s) form the database.
-func sqliteStorage_RemoveProject(Id ...int64) (int, error) {
+func sqliteStorage_RemoveProject(db *sql.DB, Id ...int64) (int, error) {
 	// ...
 	return 0, nil
 }
@@ -126,17 +181,15 @@ func sqliteStorage_SelectActivities(db *sql.DB) (activities []Activity, err erro
 }
 
 // Return activity(-ies) by given ID(s).
-func sqliteStorage_SelectActivityById(Id ...int64) ([]Activity, error) {
-	var a []Activity
+func sqliteStorage_SelectActivityById(db *sql.DB, Id ...int64) (a []Activity, err error) {
 	// ...
 	return a, nil
 }
 
 // Return currently running activity.
-func sqliteStorage_SelectActivityRunning(db *sql.DB) (Activity, error) {
-	var a Activity
+func sqliteStorage_SelectActivityRunning(db *sql.DB) (a Activity, err error) {
 	row := db.QueryRow(`SELECT * FROM Activities WHERE Stopped IS "" LIMIT 1`)
-	err := row.Scan(&a.ActivityId, &a.ProjectId, &a.Name, &a.Description, &a.Tags, &a.Started, &a.Stopped)
+	err = row.Scan(&a.ActivityId, &a.ProjectId, &a.Name, &a.Description, &a.Tags, &a.Started, &a.Stopped)
 	if err != nil {
 		return a, err
 	}
@@ -145,35 +198,99 @@ func sqliteStorage_SelectActivityRunning(db *sql.DB) (Activity, error) {
 }
 
 // Return projects.
-func sqliteStorage_SelectProjects(db *sql.DB) (projects []Project, err error) {
+func sqliteStorage_SelectProjects(db *sql.DB) (p []Project, err error) {
 	rows, err := db.Query(`SELECT * FROM Projects ORDER BY Name ASC LIMIT 5`)
+	if err != nil {
+		return p, err
+	}
+
+	defer rows.Close()
+	return parseProjectsFromRows(rows)
+}
+
+// Return project(s) by given ID(s).
+func sqliteStorage_SelectProjectById(db *sql.DB, Id ...int64) (projects []Project, err error) {
+	var ids []string
+	for _, id := range Id {
+		ids = append(ids, strconv.FormatInt(id, 10))
+	}
+	idsStr := strings.Join(ids, ", ")
+
+	sqlStmt := "SELECT * FROM Projects WHERE Id IN (" + idsStr + ")"
+	rows, err := db.Query(sqlStmt)
 	if err != nil {
 		return projects, err
 	}
 
 	defer rows.Close()
-	for rows.Next() {
-		var p Project
-		rows.Scan(&p.ProjectId, &p.Name, &p.Description, &p.Created)
-		projects = append(projects, p)
-	}
-	rows.Close()
-
-	return projects, nil
-}
-
-// Return project(s) by given ID(s).
-func sqliteStorage_SelectProjectById(Id ...int64) ([]Project, error) {
-	var p []Project
-	// ...
-	return p, nil
+	return parseProjectsFromRows(rows)
 }
 
 // Return single project by given name(s).
-func sqliteStorage_SelectProjectByName(Name ...string) ([]Project, error) {
-	var p []Project
-	// ...
-	return p, nil
+func sqliteStorage_SelectProjectByName(db *sql.DB, Name ...string) (projects []Project, err error) {
+	namesStr := strings.Join(Name, "\", \"")
+	namesStr = "\"" + namesStr + "\""
+
+	sqlStmt := "SELECT * FROM Projects WHERE Name IN (" + namesStr + ")"
+	rows, err := db.Query(sqlStmt)
+	if err != nil {
+		return projects, err
+	}
+
+	defer rows.Close()
+	return parseProjectsFromRows(rows)
+}
+
+// Update activity in the database
+// Return 1 if update was successfull otherwise 0.
+func sqliteStorage_UpdateActivity(db *sql.DB, a Activity) (cnt int64, err error) {
+	sqlStmt := `
+	UPDATE Activities 
+	SET
+	ProjectId = ?, 
+	Name = ?, 
+	Description = ?, 
+	Tags = ?, 
+	Started = ?, 
+	Stopped = ? 
+	WHERE ActivityId = ? 
+	`
+	stmt, err := db.Prepare(sqlStmt)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res, err := stmt.Exec(a.ProjectId, a.Name, a.Description, a.Tags,
+		a.Started, a.Stopped, a.ActivityId)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return res.RowsAffected()
+}
+
+// Update project in the database.
+// Return 1 if update was successfull otherwise 0.
+func sqliteStorage_UpdateProject(db *sql.DB, p Project) (cnt int64, err error) {
+	sqlStmt := `
+	UPDATE Projects 
+	SET 
+	Name = ?, 
+	Description = ?, 
+	Created = ? 
+	WHERE ProjectId = ? 
+	`
+	stmt, err := db.Prepare(sqlStmt)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res, err := stmt.Exec(p.Name, p.Description, p.Created, p.ProjectId)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return res.RowsAffected()
 }
 
 // ==========================================================================
@@ -206,4 +323,17 @@ func schemaCreate(db *sql.DB) error {
 		return err
 	}
 	return nil
+}
+
+// Helper method that converting results rows
+// into regular instances of Project object.
+func parseProjectsFromRows(rows *sql.Rows) (projects []Project, err error) {
+	for rows.Next() {
+		var p Project
+		rows.Scan(&p.ProjectId, &p.Name, &p.Description, &p.Created)
+		projects = append(projects, p)
+	}
+	rows.Close()
+
+	return projects, nil
 }

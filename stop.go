@@ -7,7 +7,9 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
+	"time"
 )
 
 var cmdStop = &Command{
@@ -24,8 +26,19 @@ func runStop(cmd *Command, db *sql.DB, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Println("TODO Implement `stop` command!")
-	fmt.Println()
+	ra, err := SqliteStorage.SelectActivityRunning(db)
+	if err != nil {
+		fmt.Printf("\nThere is no running activity!\n\n")
+		os.Exit(1)
+	}
+
+	ra.Stopped = time.Now().Format(time.RFC3339)
+	_, err = SqliteStorage.UpdateActivity(db, ra)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("\nActivity '%s' was successfully stopped.\n\n", ra.Name)
 }
 
 func helpStop(cmd *Command) {

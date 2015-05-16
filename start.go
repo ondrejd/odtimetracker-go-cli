@@ -25,11 +25,26 @@ func runStart(cmd *Command, db *sql.DB, args []string) {
 		os.Exit(1)
 	}
 
-	activityString := args[0]
-	log.Println("Start activity with string: %s\n", activityString)
+	ra, err := SqliteStorage.SelectActivityRunning(db)
+	if err == nil && ra.ActivityId > 0 {
+		fmt.Printf("\nCan not start new activity - another one is still running!\n\n")
+		os.Exit(1)
+	}
 
-	fmt.Println("TODO Implement `start` command!")
-	fmt.Println()
+	aStr := args[0]
+
+	var a Activity
+	err = a.Parse(aStr, db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	a, err = SqliteStorage.InsertActivity(db, a.ProjectId, a.Name, a.Description, a.Tags)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("\nActivity successfully started.\n\n")
 }
 
 func helpStart(cmd *Command) {
