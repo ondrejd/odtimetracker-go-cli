@@ -30,8 +30,9 @@ type Command struct {
 }
 
 // Prints usage information for the command.
-func (cmd *Command) Usage(Prefix string) {
-	fmt.Printf("%s%s %s\t%s\n", Prefix, cmd.Name, cmd.UsageDesc, cmd.Desc)
+func (cmd *Command) Usage(prefix string, suffix string) {
+	fmt.Printf("%s%s %s\t%s\n%s", prefix,
+		cmd.Name, cmd.UsageDesc, cmd.Desc, suffix)
 }
 
 // All commands supported by this tool
@@ -80,7 +81,7 @@ func usage() {
 	fmt.Printf("\t%s command [arguments]\n\n", AppShortName)
 	fmt.Printf("Available commands:\n\n")
 	for _, cmd := range commands {
-		cmd.Usage("\t")
+		cmd.Usage("\t", "")
 	}
 	fmt.Printf("\nUse \"%s help [command]\" for more information about a command.\n\n", AppShortName)
 	fmt.Printf("Additional help topics:\n\n")

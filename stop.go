@@ -3,6 +3,7 @@
 
 package main
 
+// Here is implementation of the `stop` command.
 import (
 	"database/sql"
 	"fmt"
@@ -19,7 +20,7 @@ var cmdStop = &Command{
 
 func runStop(cmd *Command, db *sql.DB, args []string) {
 	if len(args) != 0 {
-		cmd.Usage("\nUsage:\n\n\t")
+		cmd.Usage("\nUsage:\n\n\t", "\n")
 		os.Exit(1)
 	}
 

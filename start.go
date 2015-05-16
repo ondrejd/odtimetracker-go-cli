@@ -3,6 +3,7 @@
 
 package main
 
+// Here is implementation of the `start` command.
 import (
 	"database/sql"
 	"fmt"
@@ -20,7 +21,7 @@ var cmdStart = &Command{
 
 func runStart(cmd *Command, db *sql.DB, args []string) {
 	if len(args) != 1 {
-		cmd.Usage("\nUsage:\n\n\t")
+		cmd.Usage("\nUsage:\n\n\t", "\n")
 		os.Exit(1)
 	}
 
