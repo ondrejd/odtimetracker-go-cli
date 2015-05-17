@@ -82,12 +82,11 @@ func usage() {
 	fmt.Printf("Available commands:\n\n")
 	for _, cmd := range commands {
 		fmt.Printf("\t%s\t%s\n", cmd.Name, cmd.Desc)
-		//cmd.Usage("\t", "")
 	}
 	fmt.Printf("\nUse \"%s help [command]\" for more information about a command.\n\n", AppShortName)
-	fmt.Printf("Additional help topics:\n\n")
-	fmt.Printf("\tactivityString\tHelp on creating strings describing new activity.\n\n")
-	fmt.Printf("Use \"%s help [topic]\" for more information about a topic.\n\n", AppShortName)
+	//fmt.Printf("Additional help topics:\n\n")
+	//fmt.Printf("\tactivityString\tHelp on creating strings describing new activity.\n\n")
+	//fmt.Printf("Use \"%s help [topic]\" for more information about a topic.\n\n", AppShortName)
 }
 
 // Implements the 'help' command.

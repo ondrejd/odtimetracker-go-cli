@@ -19,28 +19,28 @@ type Storage struct {
 	InsertProject func(db *sql.DB, name string, desc string) (Project, error)
 
 	// Remove activity(-ies) with given Id(s) form the database.
-	RemoveActivity func(db *sql.DB, Id ...int64) (int, error)
+	RemoveActivity func(db *sql.DB, id ...int64) (int, error)
 
 	// Remove project(s) with given Id(s) form the database.
-	RemoveProject func(db *sql.DB, Id ...int64) (int, error)
+	RemoveProject func(db *sql.DB, id ...int64) (int, error)
 
 	// Return activities.
-	SelectActivities func(db *sql.DB) ([]Activity, error)
+	SelectActivities func(db *sql.DB, limit int) ([]Activity, error)
 
 	// Return activity(-ies) by given ID(s).
-	SelectActivityById func(db *sql.DB, Id ...int64) ([]Activity, error)
+	SelectActivityById func(db *sql.DB, id ...int64) ([]Activity, error)
 
 	// Return currently running activity.
 	SelectActivityRunning func(db *sql.DB) (Activity, error)
 
 	// Return projects.
-	SelectProjects func(db *sql.DB) ([]Project, error)
+	SelectProjects func(db *sql.DB, limit int) ([]Project, error)
 
 	// Return project(s) by given ID(s).
-	SelectProjectById func(db *sql.DB, Id ...int64) ([]Project, error)
+	SelectProjectById func(db *sql.DB, id ...int64) ([]Project, error)
 
 	// Return single project by given name(s).
-	SelectProjectByName func(db *sql.DB, Name ...string) ([]Project, error)
+	SelectProjectByName func(db *sql.DB, name ...string) ([]Project, error)
 
 	// Update activity in the database
 	UpdateActivity func(db *sql.DB, a Activity) (int64, error)

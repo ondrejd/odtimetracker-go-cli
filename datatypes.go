@@ -82,7 +82,10 @@ func (a *Activity) Parse(db *sql.DB, activityString string) error {
 		return errors.New("Empty string given!")
 	}
 
-	if strings.Count(aStr, ProjectNameSep) > 1 || strings.Count(aStr, TagsSep) > 1 || strings.Count(aStr, DescriptionSep) > 1 {
+	if strings.Count(aStr, ProjectNameSep) > 1 ||
+		strings.Count(aStr, TagsSep) > 1 ||
+		strings.Count(aStr, DescriptionSep) > 1 {
+
 		return errors.New("Given activity string is not well formed!")
 	}
 

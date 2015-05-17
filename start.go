@@ -14,7 +14,7 @@ import (
 var cmdStart = &Command{
 	Name:      "start",
 	Desc:      "Start new activity.",
-	UsageDesc: "[activityString]",
+	UsageDesc: "ACTIVITY_STRING",
 	Run:       runStart,
 	Help:      helpStart,
 }

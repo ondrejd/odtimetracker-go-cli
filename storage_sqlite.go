@@ -151,20 +151,26 @@ func sqliteStorage_InsertProject(db *sql.DB, name string, desc string) (p Projec
 }
 
 // Remove activity(-ies) with given Id(s) form the database.
-func sqliteStorage_RemoveActivity(db *sql.DB, Id ...int64) (int, error) {
+func sqliteStorage_RemoveActivity(db *sql.DB, id ...int64) (int, error) {
 	// ...
 	return 0, nil
 }
 
 // Remove project(s) with given Id(s) form the database.
-func sqliteStorage_RemoveProject(db *sql.DB, Id ...int64) (int, error) {
+func sqliteStorage_RemoveProject(db *sql.DB, id ...int64) (int, error) {
 	// ...
 	return 0, nil
 }
 
 // Return activities.
-func sqliteStorage_SelectActivities(db *sql.DB) (activities []Activity, err error) {
-	rows, err := db.Query(`SELECT * FROM Activities ORDER BY Started DESC LIMIT 5`)
+func sqliteStorage_SelectActivities(db *sql.DB, limit int) (activities []Activity, err error) {
+	stmtSql := `SELECT * FROM Activities ORDER BY Started DESC LIMIT ?`
+	stmt, err := db.Prepare(stmtSql)
+	if err != nil {
+		return activities, err
+	}
+
+	rows, err := stmt.Query(limit)
 	if err != nil {
 		return activities, err
 	}
@@ -181,7 +187,7 @@ func sqliteStorage_SelectActivities(db *sql.DB) (activities []Activity, err erro
 }
 
 // Return activity(-ies) by given ID(s).
-func sqliteStorage_SelectActivityById(db *sql.DB, Id ...int64) (a []Activity, err error) {
+func sqliteStorage_SelectActivityById(db *sql.DB, id ...int64) (a []Activity, err error) {
 	// ...
 	return a, nil
 }
@@ -198,8 +204,14 @@ func sqliteStorage_SelectActivityRunning(db *sql.DB) (a Activity, err error) {
 }
 
 // Return projects.
-func sqliteStorage_SelectProjects(db *sql.DB) (p []Project, err error) {
-	rows, err := db.Query(`SELECT * FROM Projects ORDER BY Name ASC LIMIT 5`)
+func sqliteStorage_SelectProjects(db *sql.DB, limit int) (p []Project, err error) {
+	stmtSql := `SELECT * FROM Projects ORDER BY Name ASC LIMIT ?`
+	stmt, err := db.Prepare(stmtSql)
+	if err != nil {
+		return p, err
+	}
+
+	rows, err := stmt.Query(limit)
 	if err != nil {
 		return p, err
 	}
@@ -209,9 +221,9 @@ func sqliteStorage_SelectProjects(db *sql.DB) (p []Project, err error) {
 }
 
 // Return project(s) by given ID(s).
-func sqliteStorage_SelectProjectById(db *sql.DB, Id ...int64) (projects []Project, err error) {
+func sqliteStorage_SelectProjectById(db *sql.DB, id ...int64) (p []Project, err error) {
 	var ids []string
-	for _, id := range Id {
+	for _, id := range id {
 		ids = append(ids, strconv.FormatInt(id, 10))
 	}
 	idsStr := strings.Join(ids, ", ")
@@ -219,7 +231,7 @@ func sqliteStorage_SelectProjectById(db *sql.DB, Id ...int64) (projects []Projec
 	sqlStmt := "SELECT * FROM Projects WHERE Id IN (" + idsStr + ")"
 	rows, err := db.Query(sqlStmt)
 	if err != nil {
-		return projects, err
+		return p, err
 	}
 
 	defer rows.Close()
@@ -227,8 +239,8 @@ func sqliteStorage_SelectProjectById(db *sql.DB, Id ...int64) (projects []Projec
 }
 
 // Return single project by given name(s).
-func sqliteStorage_SelectProjectByName(db *sql.DB, Name ...string) (projects []Project, err error) {
-	namesStr := strings.Join(Name, "\", \"")
+func sqliteStorage_SelectProjectByName(db *sql.DB, name ...string) (projects []Project, err error) {
+	namesStr := strings.Join(name, "\", \"")
 	namesStr = "\"" + namesStr + "\""
 
 	sqlStmt := "SELECT * FROM Projects WHERE Name IN (" + namesStr + ")"
