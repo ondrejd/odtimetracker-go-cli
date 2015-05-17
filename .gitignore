@@ -1,4 +1,8 @@
+# Exclude compiled files
 odtimetracker-go-cli
+odtimetracker
+
+# Some editors used
 odTimeTracker.sublime-project
 odTimeTracker.sublime-workspace
-
+odTimeTracker.geany

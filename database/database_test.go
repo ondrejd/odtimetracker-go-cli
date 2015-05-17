@@ -1,7 +1,7 @@
 // Copyright 2015 Ondrej Donek. All rights reserved.
 // See LICENSE file for more informations about licensing.
 
-package main
+package database
 
 import (
 	"testing"
@@ -9,7 +9,7 @@ import (
 
 func TestActivityParse(t *testing.T) {
 	// TODO Init storage in memory!
-	db, err := SqliteStorage.Init()
+	db, err := InitStorage(":memory:")
 	if err != nil {
 		t.Error("Expected nil got ", err)
 	}

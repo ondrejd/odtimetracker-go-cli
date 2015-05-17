@@ -3,15 +3,16 @@
 
 package main
 
-// Here is implementation of the `stop` command.
 import (
 	"database/sql"
 	"fmt"
+	"github.com/ondrejd/odtimetracker/database"
 	"log"
 	"os"
 	"time"
 )
 
+// Here is implementation of the `stop` command.
 var cmdStop = &Command{
 	Name:      "stop",
 	Desc:      "Stop currently running activity.",
@@ -26,14 +27,14 @@ func runStop(cmd *Command, db *sql.DB, args []string) {
 		os.Exit(1)
 	}
 
-	ra, err := SqliteStorage.SelectActivityRunning(db)
+	ra, err := database.SelectActivityRunning(db)
 	if err != nil {
 		fmt.Printf("\nThere is no running activity!\n\n")
 		os.Exit(1)
 	}
 
 	ra.Stopped = time.Now().Format(time.RFC3339)
-	_, err = SqliteStorage.UpdateActivity(db, ra)
+	_, err = database.UpdateActivity(db, ra)
 	if err != nil {
 		log.Fatal(err)
 	}

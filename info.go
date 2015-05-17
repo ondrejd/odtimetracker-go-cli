@@ -1,16 +1,17 @@
 // Copyright 2015 Ondrej Donek. All rights reserved.
 // See LICENSE file for more informations about licensing.
 
-// Here is implementation of the `info` command.
 package main
 
 import (
 	"database/sql"
 	"fmt"
+	"github.com/ondrejd/odtimetracker/database"
 	"log"
 	"os"
 )
 
+// Here is implementation of the `info` command.
 var cmdInfo = &Command{
 	Name:      "info",
 	Desc:      "Print info about current status.",
@@ -37,7 +38,7 @@ func runInfo(cmd *Command, db *sql.DB, args []string) {
 		os.Exit(1)
 	}
 
-	a, err := SqliteStorage.SelectActivityRunning(db)
+	a, err := database.SelectActivityRunning(db)
 	if err == sql.ErrNoRows {
 		fmt.Printf("\nThere is no running activity.\n\n")
 	} else if err != nil {

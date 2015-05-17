@@ -1,13 +1,13 @@
 // Copyright 2015 Ondrej Donek. All rights reserved.
 // See LICENSE file for more informations about licensing.
 
-// Here is implementation of the `list` command.
 package main
 
 import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/ondrejd/odtimetracker/database"
 	"log"
 	"os"
 	"strconv"
@@ -15,6 +15,7 @@ import (
 	"time"
 )
 
+// Here is implementation of the `list` command.
 var cmdList = &Command{
 	Name:      "list",
 	Desc:      "List activities or projects.",
@@ -87,7 +88,8 @@ func runList(cmd *Command, db *sql.DB, args []string) {
 	} else if what == "projects" {
 		listProjects(db)
 	} else {
-		err := errors.New(fmt.Sprintf("Wrong argument given - '%s' is not recognized keyword for 'list' command!", what))
+		msg := "Wrong argument given - '%s' is not recognized keyword for 'list' command!"
+		err := errors.New(fmt.Sprintf(msg, what))
 		fmt.Println(err)
 		cmd.Usage("\nUsage:\n\n\t", "\n")
 		os.Exit(1)
@@ -111,7 +113,7 @@ func listActivities(db *sql.DB) {
 		limit = 0
 	}
 
-	activities, err := SqliteStorage.SelectActivities(db, limit)
+	activities, err := database.SelectActivities(db, limit)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -139,8 +141,9 @@ func listActivities(db *sql.DB) {
 					a.Name, a.Description)
 			}
 		} else {
-			fmt.Printf(ActivityFormatShort, a.ActivityId, formatDatetime(started),
-				formatDatetime(stopped), a.Name)
+			fmt.Printf(ActivityFormatShort, a.ActivityId, 
+				formatDatetime(started), formatDatetime(stopped), 
+				a.Name)
 		}
 	}
 
@@ -153,7 +156,7 @@ func listProjects(db *sql.DB) {
 		limit = 0
 	}
 
-	projects, err := SqliteStorage.SelectProjects(db, limit)
+	projects, err := database.SelectProjects(db, limit)
 	if err != nil {
 		log.Fatal(err)
 	}
