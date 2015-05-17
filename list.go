@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/ondrejd/odtimetracker/database"
+	"github.com/odTimeTracker/odtimetracker-go-lib/database"
 	"log"
 	"os"
 	"strconv"
@@ -141,8 +141,8 @@ func listActivities(db *sql.DB) {
 					a.Name, a.Description)
 			}
 		} else {
-			fmt.Printf(ActivityFormatShort, a.ActivityId, 
-				formatDatetime(started), formatDatetime(stopped), 
+			fmt.Printf(ActivityFormatShort, a.ActivityId,
+				formatDatetime(started), formatDatetime(stopped),
 				a.Name)
 		}
 	}

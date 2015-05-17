@@ -6,7 +6,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/ondrejd/odtimetracker/database"
+	"github.com/odTimeTracker/odtimetracker-go-lib/database"
 	"log"
 	"os"
 	"time"

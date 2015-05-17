@@ -6,7 +6,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/ondrejd/odtimetracker/database"
+	"github.com/odTimeTracker/odtimetracker-go-lib/database"
 	"log"
 	"os"
 )
@@ -40,7 +40,7 @@ func runStart(cmd *Command, db *sql.DB, args []string) {
 		log.Fatal(err)
 	}
 
-	a, err = database.InsertActivity(db, a.ProjectId, 
+	a, err = database.InsertActivity(db, a.ProjectId,
 		a.Name, a.Description, a.Tags)
 	if err != nil {
 		log.Fatal(err)
