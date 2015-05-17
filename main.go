@@ -81,7 +81,8 @@ func usage() {
 	fmt.Printf("\t%s command [arguments]\n\n", AppShortName)
 	fmt.Printf("Available commands:\n\n")
 	for _, cmd := range commands {
-		cmd.Usage("\t", "")
+		fmt.Printf("\t%s\t%s\n", cmd.Name, cmd.Desc)
+		//cmd.Usage("\t", "")
 	}
 	fmt.Printf("\nUse \"%s help [command]\" for more information about a command.\n\n", AppShortName)
 	fmt.Printf("Additional help topics:\n\n")
@@ -94,9 +95,10 @@ func usage() {
 func help(args []string) {
 	if len(args) == 0 {
 		usage()
+		os.Exit(0)
 	}
 
-	if len(args) != 1 {
+	if len(args) > 1 {
 		fmt.Printf("\nUsage:\n\n\t%s help [command]\n\nToo many arguments given!\n", AppShortName)
 		os.Exit(1)
 	}

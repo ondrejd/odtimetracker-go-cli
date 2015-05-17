@@ -34,7 +34,7 @@ func runStart(cmd *Command, db *sql.DB, args []string) {
 	aStr := args[0]
 
 	var a Activity
-	err = a.Parse(aStr, db)
+	err = a.Parse(db, aStr)
 	if err != nil {
 		log.Fatal(err)
 	}

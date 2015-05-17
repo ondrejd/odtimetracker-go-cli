@@ -20,6 +20,22 @@ var cmdList = &Command{
 	Help:      helpList,
 }
 
+var cmdList_longDesc = `
+Usage:
+
+	%s %s %s
+
+%s
+
+There are several flags that have influence on output:
+
+	--all			List all possible results.
+	--limit=[VAL]	Set limit for results (default 5).
+	--full			Full form of the output list.
+	--short			Short form of the output list (default).
+
+`
+
 func runList(cmd *Command, db *sql.DB, args []string) {
 	if len(args) != 1 {
 		cmd.Usage("\nUsage:\n\n\t", "\n")
@@ -41,7 +57,7 @@ func runList(cmd *Command, db *sql.DB, args []string) {
 }
 
 func helpList(cmd *Command) {
-	fmt.Printf("\nTODO Finish help on `%s`!\n\n", cmd.Name)
+	fmt.Printf(cmdList_longDesc, AppShortName, cmd.Name, cmd.UsageDesc, cmd.Desc)
 }
 
 func listActivities(db *sql.DB) {

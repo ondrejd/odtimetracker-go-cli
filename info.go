@@ -19,6 +19,18 @@ var cmdInfo = &Command{
 	Help:      helpInfo,
 }
 
+var cmdInfo_longDesc = `
+Usage:
+
+	%s %s
+
+%s
+
+If there is a running activity print its name and duration otherwise print 
+message that there is no running activity.
+
+`
+
 func runInfo(cmd *Command, db *sql.DB, args []string) {
 	if len(args) != 0 {
 		cmd.Usage("\nUsage:\n\n\t", "\n")
@@ -38,5 +50,5 @@ func runInfo(cmd *Command, db *sql.DB, args []string) {
 }
 
 func helpInfo(cmd *Command) {
-	fmt.Printf("\nTODO Finish help on `%s`!\n\n", cmd.Name)
+	fmt.Printf(cmdInfo_longDesc, AppShortName, cmd.Name, cmd.Desc)
 }

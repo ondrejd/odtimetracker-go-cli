@@ -76,7 +76,7 @@ func (a *Activity) Duration() time.Duration {
 }
 
 // Initialize activity from the given string.
-func (a *Activity) Parse(activityString string, db *sql.DB) error {
+func (a *Activity) Parse(db *sql.DB, activityString string) error {
 	aStr := strings.Trim(activityString, " \n\t")
 	if aStr == "" {
 		return errors.New("Empty string given!")
