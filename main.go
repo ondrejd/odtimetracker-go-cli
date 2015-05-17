@@ -7,7 +7,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/ondrejd/odtimetracker/database"
+	"github.com/odTimeTracker/odtimetracker-go-lib/database"
 	"os"
 	"os/user"
 	"path"
@@ -19,9 +19,9 @@ const (
 	// Application's short name (system name)
 	AppShortName = "odtimetracker"
 	// Application's version
-	AppVersion   = "0.1"
+	AppVersion = "0.1"
 	// Application's info line
-	AppInfo      = AppName + " " + AppVersion
+	AppInfo = AppName + " " + AppVersion
 	// Application's description
 	AppDesc = "Simple tool for tracking time you have spent working on your projects."
 )
@@ -66,7 +66,7 @@ func main() {
 		help(os.Args[2:])
 		return
 	}
-	
+
 	path, _ := databasePath()
 	db, err := database.InitStorage(path)
 	if err != nil {
@@ -84,7 +84,7 @@ func main() {
 
 	fmt.Printf("Unknown command '%s'.\n\nRun '%s help' for usage.\n", os.Args[1], AppShortName)
 }
-	
+
 // Returns path to the SQLite database file.
 func databasePath() (string, error) {
 	usr, err := user.Current()
