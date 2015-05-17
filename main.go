@@ -1,19 +1,29 @@
 // Copyright 2015 Ondrej Donek. All rights reserved.
 // See LICENSE file for more informations about licensing.
+
+// odTimeTracker is simple time-tracking tool.
 package main
 
 import (
 	"database/sql"
 	"fmt"
+	"github.com/odTimeTracker/odtimetracker-go-lib/database"
 	"os"
+	"os/user"
+	"path"
 )
 
 const (
-	AppName      = "odTimeTracker"                                                          // Application's name
-	AppShortName = "odtimetracker"                                                          // Application's short name (system name)
-	AppVersion   = "0.1"                                                                    // Application's version
-	AppInfo      = AppName + " " + AppVersion                                               // Application's info line
-	AppDesc      = "Simple tool for tracking time you have spent working on your projects." // Application's description
+	// Application's name
+	AppName = "odTimeTracker"
+	// Application's short name (system name)
+	AppShortName = "odtimetracker"
+	// Application's version
+	AppVersion = "0.1"
+	// Application's info line
+	AppInfo = AppName + " " + AppVersion
+	// Application's description
+	AppDesc = "Simple tool for tracking time you have spent working on your projects."
 )
 
 // Simple struct representing command
@@ -57,7 +67,8 @@ func main() {
 		return
 	}
 
-	db, err := SqliteStorage.Init()
+	path, _ := databasePath()
+	db, err := database.InitStorage(path)
 	if err != nil {
 		fmt.Printf("Error occured during initializing database connection:\n\n%s\n\n", err.Error())
 		return
@@ -74,6 +85,15 @@ func main() {
 	fmt.Printf("Unknown command '%s'.\n\nRun '%s help' for usage.\n", os.Args[1], AppShortName)
 }
 
+// Returns path to the SQLite database file.
+func databasePath() (string, error) {
+	usr, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+	return path.Join(usr.HomeDir, ".odtimetracker.sqlite"), nil
+}
+
 // Prints usage informations.
 func usage() {
 	fmt.Printf("\n%s\n\n", AppDesc)
@@ -82,12 +102,11 @@ func usage() {
 	fmt.Printf("Available commands:\n\n")
 	for _, cmd := range commands {
 		fmt.Printf("\t%s\t%s\n", cmd.Name, cmd.Desc)
-		//cmd.Usage("\t", "")
 	}
 	fmt.Printf("\nUse \"%s help [command]\" for more information about a command.\n\n", AppShortName)
-	fmt.Printf("Additional help topics:\n\n")
-	fmt.Printf("\tactivityString\tHelp on creating strings describing new activity.\n\n")
-	fmt.Printf("Use \"%s help [topic]\" for more information about a topic.\n\n", AppShortName)
+	//fmt.Printf("Additional help topics:\n\n")
+	//fmt.Printf("\tactivityString\tHelp on creating strings describing new activity.\n\n")
+	//fmt.Printf("Use \"%s help [topic]\" for more information about a topic.\n\n", AppShortName)
 }
 
 // Implements the 'help' command.
