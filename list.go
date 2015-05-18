@@ -8,6 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/odTimeTracker/odtimetracker-go-lib/database"
+	odstrings "github.com/odTimeTracker/odtimetracker-go-lib/strings"
+	"github.com/apcera/termtables"
 	"log"
 	"os"
 	"strconv"
@@ -100,17 +102,10 @@ func helpList(cmd *Command) {
 	fmt.Printf(cmdListHelp, AppShortName, cmd.Name, cmd.UsageDesc, cmd.Desc)
 }
 
-const (
-	ActivityFormatFull  = "%d\t%s-%s\t%s\n"
-	ActivityFormatShort = "%d\t%s-%s\t%s\n"
-	ProjectFormatFull   = "%d\t%s\t%s\n"
-	ProjectFormatShort  = "%d\t%s\n"
-)
-
 func listActivities(db *sql.DB) {
 	limit := cmdList_flagShowLimit
 	if cmdList_flagShowAll == true {
-		limit = 0
+		limit = -1
 	}
 
 	activities, err := database.SelectActivities(db, limit)
@@ -119,41 +114,51 @@ func listActivities(db *sql.DB) {
 	}
 
 	fmt.Println()
+
+	table := termtables.CreateTable()
+	if cmdList_flagShowFull == true {
+		table.AddHeaders("AID", "Project", "Name", /*"Description", */"Tags", "Started", "Stopped", "Duration")
+	} else {
+		table.AddHeaders("AID", "Project", "Name", "Started", "Duration")
+	}
+
 	for _, a := range activities {
-		started, err := a.StartedTime()
-		if err != nil {
-			started = time.Now()
+		// TODO This needs to be rewritten!!!
+		var p database.Project
+		projects, _ := database.SelectProjectById(db, a.ProjectId)
+		if len(projects) == 1 {
+			p = projects[0]
 		}
 
-		stopped, err := a.StoppedTime()
+		starttime, err := a.StartedTime()
 		if err != nil {
-			stopped = time.Now()
+			starttime = time.Now()
 		}
+		started := odstrings.FormatTime(starttime)
 
 		if cmdList_flagShowFull == true {
-			if a.Description == "" {
-				fmt.Printf(ActivityFormatFull, a.ActivityId,
-					formatDatetime(started), formatDatetime(stopped),
-					a.Name)
+			var stopped string
+			stoptime, err := a.StoppedTime()
+			if err != nil {
+				stopped = ""
 			} else {
-				fmt.Printf(ActivityFormatFull+"\t%s\n", a.ActivityId,
-					formatDatetime(started), formatDatetime(stopped),
-					a.Name, a.Description)
+				stopped = odstrings.FormatTime(stoptime)
 			}
+
+			table.AddRow(a.ActivityId, p.Name, a.Name, /*a.Description, */a.Tags, started, stopped, a.Duration())
 		} else {
-			fmt.Printf(ActivityFormatShort, a.ActivityId,
-				formatDatetime(started), formatDatetime(stopped),
-				a.Name)
+			table.AddRow(a.ActivityId, p.Name, a.Name, started, a.Duration())
 		}
 	}
 
+	fmt.Println(table.Render())
 	fmt.Println()
 }
 
 func listProjects(db *sql.DB) {
 	limit := cmdList_flagShowLimit
 	if cmdList_flagShowAll == true {
-		limit = 0
+		limit = -1
 	}
 
 	projects, err := database.SelectProjects(db, limit)
@@ -162,29 +167,29 @@ func listProjects(db *sql.DB) {
 	}
 
 	fmt.Println()
-	for _, p := range projects {
-		if cmdList_flagShowFull == true {
-			ctime, err := p.CreatedTime()
-			if err != nil {
-				ctime = time.Now()
-			}
 
-			if p.Description == "" {
-				fmt.Printf(ProjectFormatFull, p.ProjectId,
-					formatDatetime(ctime), p.Name)
-			} else {
-				fmt.Printf(ProjectFormatFull+"\t%s\n", p.ProjectId,
-					formatDatetime(ctime), p.Name, p.Description)
-			}
+	table := termtables.CreateTable()
+	if cmdList_flagShowFull == true {
+		table.AddHeaders("PID", "Name", "Description", "Created")
+	} else {
+		table.AddHeaders("PID", "Name", "Created")
+	}
+
+	for _, p := range projects {
+		ctime, err := p.CreatedTime()
+		if err != nil {
+			ctime = time.Now()
+		}
+		created := odstrings.FormatTime(ctime)
+
+		if cmdList_flagShowFull == true {
+			table.AddRow(p.ProjectId, p.Name, p.Description, created)
 		} else {
-			fmt.Printf(ProjectFormatShort, p.ProjectId, p.Name)
+			table.AddRow(p.ProjectId, p.Name, created)
 		}
 	}
 
+	fmt.Println(table.Render())
 	fmt.Println()
 }
 
-func formatDatetime(t time.Time) string {
-	return fmt.Sprintf("%d.%d %d %02d:%02d:%02d", t.Day(), t.Month(), t.Year(),
-		t.Hour(), t.Minute(), t.Second())
-}
