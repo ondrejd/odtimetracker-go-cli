@@ -11,7 +11,9 @@ import (
 	"os"
 )
 
-// Here is implementation of the `info` command.
+// TODO Display also current work time today.
+
+// Here is implementation of the "info" command.
 var cmdInfo = &Command{
 	Name:      "info",
 	Desc:      "Print info about current status.",

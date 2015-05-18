@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// Here is implementation of the `stop` command.
+// Here is implementation of the "stop" command.
 var cmdStop = &Command{
 	Name:      "stop",
 	Desc:      "Stop currently running activity.",

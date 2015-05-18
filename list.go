@@ -48,10 +48,10 @@ Or these to set format of the results:
 
 Examples:
 
-	%[1]s list activities
-	%[1]s list activities --all --full
-	%[1]s list projects --full
-	%[1]s list activities --limit=10
+	%[1]s %[2]s activities
+	%[1]s %[2]s activities --all --full
+	%[1]s %[2]s projects --full
+	%[1]s %[2]s activities --limit=10
 
 `
 
@@ -72,7 +72,7 @@ func runList(cmd *Command, db *sql.DB, args []string) {
 		cmd.Usage("\nUsage:\n\n\t", "\n")
 		os.Exit(1)
 	}
-	//log.Println(args)
+
 	for _, a := range args {
 		switch a {
 		case "--all":

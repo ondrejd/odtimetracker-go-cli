@@ -49,6 +49,7 @@ func (cmd *Command) Usage(prefix string, suffix string) {
 var commands = []*Command{
 	cmdInfo,
 	cmdList,
+	cmdReport,
 	cmdStart,
 	cmdStop,
 }

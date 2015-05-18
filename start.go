@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-// Here is implementation of the `start` command.
+// Here is implementation of the "start" command.
 var cmdStart = &Command{
 	Name:      "start",
 	Desc:      "Start new activity.",
