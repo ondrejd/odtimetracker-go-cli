@@ -8,4 +8,5 @@ env:
 
 install:
   - go get github.com/mattn/go-sqlite3
+  - go get github.com/apcera/termtables
   - go get github.com/odTimeTracker/odtimetracker-go-lib
