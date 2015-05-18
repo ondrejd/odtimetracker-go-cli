@@ -21,6 +21,17 @@ var cmdStop = &Command{
 	Help:      helpStop,
 }
 
+// Template for help of "stop" command.
+const cmdStopHelp = `
+Usage:
+
+	%[1]s %[2]s %[3]s
+
+%[4]s
+
+`
+
+// Execute "stop" command. Called from function "main()".
 func runStop(cmd *Command, db *sql.DB, args []string) {
 	if len(args) != 0 {
 		cmd.Usage("\nUsage:\n\n\t", "\n")
@@ -42,6 +53,8 @@ func runStop(cmd *Command, db *sql.DB, args []string) {
 	fmt.Printf("\nActivity '%s' was successfully stopped.\n\n", ra.Name)
 }
 
+// Render help for "stop" command.
 func helpStop(cmd *Command) {
-	fmt.Printf("\nTODO Finish help on `%s`!\n\n", cmd.Name)
+	fmt.Printf(cmdStopHelp, AppShortName, cmd.Name, cmd.UsageDesc, cmd.Desc)
 }
+
