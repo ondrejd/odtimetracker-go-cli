@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-// Here is implementation of the `list` command.
+// Here is implementation of the "list" command.
 var cmdList = &Command{
 	Name:      "list",
 	Desc:      "List activities or projects.",
@@ -26,6 +26,7 @@ var cmdList = &Command{
 	Help:      helpList,
 }
 
+// Template for help of "list" command.
 const cmdListHelp = `
 Usage:
 
@@ -55,11 +56,17 @@ Examples:
 `
 
 var (
+	// If TRUE all records are shown (this suppress limit option).
 	cmdList_flagShowAll   bool = false
-	cmdList_flagShowFull  bool = false // If TRUE flag '--short' is used
-	cmdList_flagShowLimit int  = 5     // Default value for number of rows in list
+
+	// If TRUE flag '--short' is used.
+	cmdList_flagShowFull  bool = false
+
+	// Default value for number of rows in list.
+	cmdList_flagShowLimit int  = 5
 )
 
+// Execute "list" command. Called from function "main()".
 func runList(cmd *Command, db *sql.DB, args []string) {
 	if len(args) < 1 || len(args) > 3 {
 		cmd.Usage("\nUsage:\n\n\t", "\n")
@@ -98,10 +105,12 @@ func runList(cmd *Command, db *sql.DB, args []string) {
 	}
 }
 
+// Render help for "list" command.
 func helpList(cmd *Command) {
 	fmt.Printf(cmdListHelp, AppShortName, cmd.Name, cmd.UsageDesc, cmd.Desc)
 }
 
+// Render list of activities.
 func listActivities(db *sql.DB) {
 	limit := cmdList_flagShowLimit
 	if cmdList_flagShowAll == true {
@@ -155,6 +164,7 @@ func listActivities(db *sql.DB) {
 	fmt.Println()
 }
 
+// Render list of projects.
 func listProjects(db *sql.DB) {
 	limit := cmdList_flagShowLimit
 	if cmdList_flagShowAll == true {

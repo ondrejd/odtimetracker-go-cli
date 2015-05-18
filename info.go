@@ -20,7 +20,8 @@ var cmdInfo = &Command{
 	Help:      helpInfo,
 }
 
-var cmdInfo_longDesc = `
+// Template for help of "list" command.
+const cmdInfoHelp = `
 Usage:
 
 	%s %s
@@ -32,6 +33,7 @@ message that there is no running activity.
 
 `
 
+// Execute "info" command. Called from function "main()".
 func runInfo(cmd *Command, db *sql.DB, args []string) {
 	if len(args) != 0 {
 		cmd.Usage("\nUsage:\n\n\t", "\n")
@@ -50,6 +52,8 @@ func runInfo(cmd *Command, db *sql.DB, args []string) {
 	}
 }
 
+// Render help for "info" command.
 func helpInfo(cmd *Command) {
-	fmt.Printf(cmdInfo_longDesc, AppShortName, cmd.Name, cmd.Desc)
+	fmt.Printf(cmdInfoHelp, AppShortName, cmd.Name, cmd.Desc)
 }
+
