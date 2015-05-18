@@ -7,23 +7,23 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/odTimeTracker/odtimetracker-go-lib"
 	"github.com/odTimeTracker/odtimetracker-go-lib/database"
 	"os"
 	"os/user"
 	"path"
 )
 
-const (
+var (
 	// Application's name
 	AppName = "odTimeTracker"
 	// Application's short name (system name)
 	AppShortName = "odtimetracker"
-	// Application's version
-	AppVersion = "0.1"
+	AppVersion = odtimetracker.Version{ Major: 0, Minor: 1, Maintenance: 0, }
 	// Application's info line
-	AppInfo = AppName + " " + AppVersion
+	AppInfo = AppName + " " + AppVersion.String()
 	// Application's description
-	AppDesc = "Simple tool for tracking time you have spent working on your projects."
+	AppDesc = "Simple tool for time-tracking."
 )
 
 // Simple struct representing command
@@ -104,13 +104,9 @@ func usage() {
 		fmt.Printf("\t%s\t%s\n", cmd.Name, cmd.Desc)
 	}
 	fmt.Printf("\nUse \"%s help [command]\" for more information about a command.\n\n", AppShortName)
-	//fmt.Printf("Additional help topics:\n\n")
-	//fmt.Printf("\tactivityString\tHelp on creating strings describing new activity.\n\n")
-	//fmt.Printf("Use \"%s help [topic]\" for more information about a topic.\n\n", AppShortName)
 }
 
 // Implements the 'help' command.
-// TODO Add help for topic `activityString`!
 func help(args []string) {
 	if len(args) == 0 {
 		usage()
