@@ -1,12 +1,13 @@
-// Copyright 2015 Ondrej Donek. All rights reserved.
-// See LICENSE file for more informations about licensing.
+// Copyright 2015 Ondřej Doněk. All rights reserved.
+// See LICENSE file for more details about licensing.
 
 package main
 
 import (
 	"database/sql"
 	"fmt"
-//	"github.com/odTimeTracker/odtimetracker-go-lib/database"
+	//	db "github.com/odTimeTracker/odtimetracker-go-lib/database"
+	"github.com/odTimeTracker/odtimetracker-go-lib/reports"
 	"log"
 	"os"
 	"strings"
@@ -57,17 +58,6 @@ Examples:
 
 `
 
-var (
-	cmdReport_FlagToday   bool = false // Report for today activities.
-	cmdReport_FlagWeek    bool = false // Report for activities tracked this week.
-	cmdReport_FlagMonth   bool = true  // Report for activities tracked this month.
-	
-	cmdReport_FlagProject string = "" // Project name filter
-	cmdReport_FlagTag     string = "" // Tag filter
-	
-	cmdReport_FlagFile    string = "report.html"
-)
-
 // Execute "report" command. Called from function "main()".
 func runReport(cmd *Command, db *sql.DB, args []string) {
 	if len(args) > 4 {
@@ -76,34 +66,48 @@ func runReport(cmd *Command, db *sql.DB, args []string) {
 	}
 
 	log.Println(args)
+	var rtype = reports.ReportTypeDaily
+	var pid int64 = 0
+	var tags string = ""
+	var format = reports.ReportFormatHtml
+
 	for _, a := range args {
 		switch a {
 		case "--today":
-			cmdReport_FlagToday = true
+			rtype = reports.ReportTypeDaily
 		case "--week":
-			cmdReport_FlagWeek = true
+			rtype = reports.ReportTypeWeekly
 		case "--month":
-			cmdReport_FlagMonth = true
+			rtype = reports.ReportTypeMonthly
 		}
 
 		if strings.HasPrefix(a, "--project=") == true {
-			cmdReport_FlagProject = strings.Replace(a, "--project=", "", 1)
+			//pname = strings.Replace(a, "--file=", "", 1)
+			// ...
 		}
 
 		if strings.HasPrefix(a, "--tag=") == true {
-			cmdReport_FlagTag = strings.Replace(a, "--tag=", "", 1)
+			//tags = strings.Replace(a, "--tag=", "", 1)
+			// ...
 		}
 
 		if strings.HasPrefix(a, "--file=") == true {
-			cmdReport_FlagFile = strings.Replace(a, "--file=", "", 1)
+			//filename = strings.Replace(a, "--file=", "", 1)
+			// ...
 		}
 	}
 
 	log.Println("TODO Implement 'report' command!")
+	log.Println(rtype)
+	log.Println(pid)
+	log.Println(tags)
+	log.Println(format)
+
+	//r := reports.NewReport(rtype, format, pid, tags)
+	//log.Println(r)
 }
 
 // Render help for "info" command.
 func helpReport(cmd *Command) {
 	fmt.Printf(cmdReportHelp, AppShortName, cmd.Name, cmd.UsageDesc, cmd.Desc)
 }
-

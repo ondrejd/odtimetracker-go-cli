@@ -1,5 +1,5 @@
-// Copyright 2015 Ondrej Donek. All rights reserved.
-// See LICENSE file for more informations about licensing.
+// Copyright 2015 Ondřej Doněk. All rights reserved.
+// See LICENSE file for more details about licensing.
 
 // odTimeTracker is simple time-tracking tool.
 package main

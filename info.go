@@ -1,5 +1,5 @@
-// Copyright 2015 Ondrej Donek. All rights reserved.
-// See LICENSE file for more informations about licensing.
+// Copyright 2015 Ondřej Doněk. All rights reserved.
+// See LICENSE file for more details about licensing.
 
 package main
 
@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-// TODO Display also current work time today.
+// TODO Display also current work time for today.
 
 // Here is implementation of the "info" command.
 var cmdInfo = &Command{
