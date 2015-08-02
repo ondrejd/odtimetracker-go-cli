@@ -8,6 +8,7 @@ import (
 	"fmt"
 	//	db "github.com/odTimeTracker/odtimetracker-go-lib/database"
 	"github.com/odTimeTracker/odtimetracker-go-lib/reports"
+    "io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -65,9 +66,9 @@ func runReport(cmd *Command, db *sql.DB, args []string) {
 		os.Exit(1)
 	}
 
-	log.Println(args)
-	var rtype = reports.ReportTypeDaily
-	var pid int64 = 0
+	// These are default values (will be updated according to given arguments):
+	var rtype = reports.ReportTypeMonthly
+	var pid int64 = 0 // Project's ID (report just activities of the project)
 	var tags string = ""
 	var format = reports.ReportFormatHtml
 
@@ -84,11 +85,13 @@ func runReport(cmd *Command, db *sql.DB, args []string) {
 		if strings.HasPrefix(a, "--project=") == true {
 			//pname = strings.Replace(a, "--file=", "", 1)
 			// ...
+			log.Println("TODO Implement --project=[..] flag!")
 		}
 
 		if strings.HasPrefix(a, "--tag=") == true {
 			//tags = strings.Replace(a, "--tag=", "", 1)
 			// ...
+			log.Println("TODO Implement --tag=[..] flag!")
 		}
 
 		if strings.HasPrefix(a, "--file=") == true {
@@ -103,8 +106,14 @@ func runReport(cmd *Command, db *sql.DB, args []string) {
 	log.Println(tags)
 	log.Println(format)
 
-	//r := reports.NewReport(rtype, format, pid, tags)
-	//log.Println(r)
+	r := reports.NewReport(db, rtype, format, pid, tags)
+	//log.Println(r.Render())
+
+	// TODO Name of output file should be either set by user or generated using type...
+	err := ioutil.WriteFile("report.html", []byte(r.Render()), 0644)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // Render help for "info" command.
